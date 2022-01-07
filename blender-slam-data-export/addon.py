@@ -102,22 +102,26 @@ class SlamDataExporter(bpy.types.Operator):
             print('Processing frame ', frame_idx)
             self.go_to_frame(frame_idx)
 
-            camera_id = frame_idx
-            image_name = output_image_dir + ("/image_%d.png" % camera_id)
-            intr = camera.get_camera_intrinsics(scene)
-            pose = camera.get_camera_pose(scene)
+            bpy.ops.render.render(write_still = False)
+            print("Crazyyy", scene['mydataparams'])
 
-            points_2d = camera.project_point(scene, all_data["points_3d"])
 
-            all_data["frames"][camera_id] = {
-                "image_name": image_name,
-                "intrinsics": intr,
-                "pose": pose,
-                "points_2d": points_2d
-            }
+            #camera_id = frame_idx
+            #image_name = output_image_dir + ("/image_%d.png" % camera_id)
+            #intr = camera.get_camera_intrinsics(scene)
+            #pose = camera.get_camera_pose(scene)
 
-            if scene.slam_export_render_images:
-                self.render_image(output_dir, image_name)
+            #points_2d = camera.project_point(scene, all_data["points_3d"])
+
+            #all_data["frames"][camera_id] = {
+            #    "image_name": image_name,
+            #    "intrinsics": intr,
+            #    "pose": pose,
+            #    "points_2d": points_2d
+            #}
+
+            #if scene.slam_export_render_images:
+            #    self.render_image(output_dir, image_name)
 
 
         all_data["id_to_idx"] = {id: idx for idx,(id,v) in enumerate(all_data["points_3d"].items())}

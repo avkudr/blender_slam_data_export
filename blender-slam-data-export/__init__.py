@@ -46,15 +46,78 @@ class SlamDataExporterPanel(bpy.types.Panel):
         col.prop(context.scene, "slam_export_render_images")
         col.operator(addon.SlamDataExporter.bl_idname, text='Export')
 
+class CustomRenderEngine(bpy.types.RenderEngine):
+    # These three members are used by blender to set up the
+    # RenderEngine; define its internal name, visible name and capabilities.
+    bl_idname = "CUSTOM_SLAM_data_exporter"
+    bl_label = "SLAM data exporter"
+    bl_use_preview = False
+
+    # Init is called whenever a new render engine instance is created. Multiple
+    # instances may exist at the same time, for example for a viewport and final
+    # render.
+    def __init__(self):
+        self.scene_data = None
+        self.draw_data = None
+        self.points_2d = {}
+        self.count = 0
+
+    # When the render engine instance is destroy, this is called. Clean up any
+    # render engine data here, for example stopping running render threads.
+    def __del__(self):
+        pass
+
+    # This is the method called by Blender for both final renders (F12) and
+    # small preview for materials, world and lights.
+    def render(self, depsgraph):
+        scene = depsgraph.scene
+        
+        # update_progress
+        print('Hello from custom renderer: ', scene.frame_current)
+        scene['mydataparams'] = 5
+        
+    def view_update(self, context, depsgraph):
+        pass
+
+    def get_projected_vertices(self):
+        return self.count
+
+    def view_draw(self, context, depsgraph):
+        pass
+
+def get_panels():
+    exclude_panels = {
+        'VIEWLAYER_PT_filter',
+        'VIEWLAYER_PT_layer_passes',
+    }
+
+    panels = []
+    for panel in bpy.types.Panel.__subclasses__():
+        if hasattr(panel, 'COMPAT_ENGINES') and 'BLENDER_RENDER' in panel.COMPAT_ENGINES:
+            if panel.__name__ not in exclude_panels:
+                panels.append(panel)
+
+    return panels
 
 def register():
     for (prop_name, prop_value) in PROPS:
         setattr(bpy.types.Scene, prop_name, prop_value)
 
+    bpy.utils.register_class(CustomRenderEngine)
+
     bpy.utils.register_class(addon.SlamDataExporter)
     bpy.utils.register_class(SlamDataExporterPanel)
 
+    for panel in get_panels():
+        panel.COMPAT_ENGINES.add(CustomRenderEngine.bl_idname)
+
 def unregister():
+    bpy.utils.unregister_class(CustomRenderEngine)
+
+    for panel in get_panels():
+        if CustomRenderEngine.bl_idname in panel.COMPAT_ENGINES:
+            panel.COMPAT_ENGINES.remove(CustomRenderEngine.bl_idname)
+
     for (prop_name, _) in PROPS:
         delattr(bpy.types.Scene, prop_name)
 
