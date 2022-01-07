@@ -92,6 +92,8 @@ def project_point(scene, vertices, limit=1e-4):
      resolution_x = bpy.context.scene.render.resolution_x
      resolution_y = bpy.context.scene.render.resolution_y
      
+     camera_origin = camera.matrix_world.to_translation()
+
      cnt = 0
      for id, v in vertices.items():     
           # Get the 2D projection of the vertex
@@ -104,11 +106,10 @@ def project_point(scene, vertices, limit=1e-4):
                continue
           
           # Try a ray cast, in order to test the vertex visibility from the camera
-          origin = camera.location
-          direction = (v - origin).normalized()
-          max_distance = (v - origin).length # camera far clip
+          direction = (camera_origin - v).normalized()
+          max_distance = (camera_origin - v).length # camera far clip
           
-          is_something_hit,location,_,_,_,_ = scene.ray_cast(depsgraph, origin, direction, distance=max_distance )
+          is_something_hit,location,_,_,_,_ = scene.ray_cast(depsgraph, v, direction, distance=max_distance )
           
           # if we are hitting nothing or we are hitting the vertex itself
           if is_something_hit == False or (v - location).length < limit:
