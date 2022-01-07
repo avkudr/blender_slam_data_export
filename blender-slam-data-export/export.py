@@ -25,6 +25,7 @@ def export_points_3d(all_data, path):
         image_ids = []
         point2D_idxs = []
         for frame_idx, frame_data in all_data["frames"].items():
+            assert "points_2d" in frame_data
             if id in frame_data["points_2d"]:
                 image_ids.append(frame_idx)
                 point2D_idxs.append(frame_data["points_2d"][id][1])

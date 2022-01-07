@@ -79,12 +79,15 @@ def is_in_camera_field_of_view(camera, pt_in_camera_frame):
 
      return True
 
-def project_point(scene, depsgraph, vertices, limit=1e-4):
+def project_point(scene, vertices, limit=1e-4):
      # Threshold to test if ray cast corresponds to the original vertex
      
      camera = scene.camera
 
      points = {}
+
+     depsgraph = bpy.context.evaluated_depsgraph_get()
+     depsgraph.update()
 
      resolution_x = bpy.context.scene.render.resolution_x
      resolution_y = bpy.context.scene.render.resolution_y
@@ -113,7 +116,7 @@ def project_point(scene, depsgraph, vertices, limit=1e-4):
                points[id] = ([resolution_x * co2D.x, resolution_y * (1-co2D.y)], cnt)
                cnt = cnt + 1     
 
-          if cnt % 50 == 0:
-               print("processing vertex: ", id, len(vertices))
+          #if cnt % 50 == 0:
+          #     print("processing vertex: ", id, len(vertices))
                
      return points

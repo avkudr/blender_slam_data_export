@@ -42,14 +42,12 @@ class SlamDataExporter(bpy.types.Operator):
 
     def go_to_frame(self, frame):
         bpy.context.scene.frame_set(frame)
+        bpy.context.view_layer.update()
 
-
-    def build_depsgraphs(self):
+    def get_all_vertices(self):
         """
         Returns a dictionary with objects and their respective vertices
         in world coordinates
-
-        More about dependency graphs: https://wiki.blender.org/wiki/Source/Depsgraph
         """
         points_3d = {}
         depsgraph = bpy.context.evaluated_depsgraph_get()
@@ -65,7 +63,7 @@ class SlamDataExporter(bpy.types.Operator):
             vertices_dict = {obj.name + '.' + str(i): v  for i, v in enumerate(verts)}
             points_3d = {**points_3d, **vertices_dict} # merge dictionaries vertices_dict
 
-        return points_3d, depsgraph
+        return points_3d
 
 
     def render_image(self, output_dir, image_name):
@@ -89,13 +87,8 @@ class SlamDataExporter(bpy.types.Operator):
 
         frame_indices = self.get_frame_indices()
 
-        # all meshes with all their vertices
-        # the graph is needed for visibility check based on ray casting
-        # And, it allows having vertices as if all the modifiers were applied
-        points_3d, depsgraph = self.build_depsgraphs()
-
         all_data = {}
-        all_data["points_3d"] = points_3d
+        all_data["points_3d"] = self.get_all_vertices()
         all_data["frames"] = {}
 
         output_dir = self.get_render_output_path()
@@ -112,7 +105,7 @@ class SlamDataExporter(bpy.types.Operator):
             intr = camera.get_camera_intrinsics(scene)
             pose = camera.get_camera_pose(scene)
 
-            points_2d = camera.project_point(scene, depsgraph, points_3d)
+            points_2d = camera.project_point(scene, all_data["points_3d"])
 
             all_data["frames"][camera_id] = {
                 "image_name": image_name,
