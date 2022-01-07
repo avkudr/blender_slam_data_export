@@ -106,13 +106,16 @@ class SlamDataExporter(bpy.types.Operator):
         all_data["frames"] = {}
 
         output_dir = self.get_render_output_path()
+        output_image_dir = "images"
+        if scene.slam_export_render_images:
+            os.makedirs(os.path.join(output_dir, output_image_dir), exist_ok = True)
 
         for frame_idx in frame_indices:
             print('Processing frame ', frame_idx)
             self.go_to_frame(frame_idx)
 
             camera_id = frame_idx
-            image_name = ("image_%d.png" % camera_id)
+            image_name = output_image_dir + ("/image_%d.png" % camera_id)
             intr = camera.get_camera_intrinsics(scene)
             pose = camera.get_camera_pose(scene)
 
