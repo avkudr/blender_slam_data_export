@@ -13,6 +13,9 @@ class SlamDataExporter(bpy.types.Operator):
     bl_icon = 'EXPORT'
 
     def ensure_object_mode(self):
+        if bpy.context.mode == 'OBJECT':
+            return
+
         assert bpy.ops.object.mode_set.poll()
         bpy.ops.object.mode_set(mode='OBJECT')
 
@@ -55,7 +58,7 @@ class SlamDataExporter(bpy.types.Operator):
         for obj in bpy.context.scene.objects:
             if obj.type != "MESH":
                 continue
-            if obj.hide_render:
+            if obj.hide_viewport or obj.hide_render:
                 continue
 
             obj_eval = obj.evaluated_get(depsgraph)
