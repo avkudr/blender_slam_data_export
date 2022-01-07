@@ -97,7 +97,7 @@ def project_point(scene, vertices, limit=1e-4):
      cnt = 0
      for id, v in vertices.items():     
           # Get the 2D projection of the vertex
-          co2D = world_to_camera_view( scene, camera, v )
+          co2D = world_to_camera_view(scene, camera, v )
 
           # By default, deselect it
           #obj.data.vertices[i].select = False
@@ -109,10 +109,13 @@ def project_point(scene, vertices, limit=1e-4):
           direction = (camera_origin - v).normalized()
           max_distance = (camera_origin - v).length # camera far clip
           
-          is_something_hit,location,_,_,_,_ = scene.ray_cast(depsgraph, v, direction, distance=max_distance )
+          # To avoid hitting the vertex itself we start the cast from some very
+          # small offset towards the camera
+          offset = 1e-4
+          is_something_hit,location,_,_,_,_ = scene.ray_cast(depsgraph, v + offset * direction, direction, distance=max_distance )
           
-          # if we are hitting nothing or we are hitting the vertex itself
-          if is_something_hit == False or (v - location).length < limit:
+          # if we are hitting nothing
+          if is_something_hit == False: # or (v - location).length < limit:
                # y axis is inverted in blender
                points[id] = ([resolution_x * co2D.x, resolution_y * (1-co2D.y)], cnt)
                cnt = cnt + 1     
