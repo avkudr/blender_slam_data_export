@@ -23,14 +23,10 @@ class SlamDataExporter(bpy.types.Operator):
         """
         scene = bpy.context.scene
         frame_start = scene.frame_start
-        frame_end = scene.frame_end
+        frame_end = scene.frame_end      #included in animation
         frame_step = scene.frame_step
 
-        # there should be at least one frame
-        if frame_start == frame_end:
-            return [frame_start]
-
-        return [*range(frame_start, frame_end, frame_step)]
+        return [*range(frame_start, frame_end+1, frame_step)]
 
 
     def get_render_output_path(self):
@@ -52,10 +48,15 @@ class SlamDataExporter(bpy.types.Operator):
         """
         Returns a dictionary with objects and their respective vertices
         in world coordinates
+
+        More about dependency graphs: https://wiki.blender.org/wiki/Source/Depsgraph
         """
         points_3d = {}
         depsgraph = bpy.context.evaluated_depsgraph_get()
 
+        # each vertex (3d point) gets a unique id (integer)
+        # .. this works only if, during animation, there are no new objects entering
+        # the scene. \todo the approach has to be revised
         cnt = 0
 
         for obj in bpy.context.scene.objects:
@@ -75,11 +76,17 @@ class SlamDataExporter(bpy.types.Operator):
 
 
     def render_image(self, output_dir, image_name):
+        old_format = bpy.context.scene.render.image_settings.file_format
         old_path = bpy.context.scene.render.filepath
+
         new_path = os.path.join(output_dir, image_name)
         bpy.context.scene.render.filepath = new_path
+        bpy.context.scene.render.image_settings.file_format = 'PNG'
         bpy.ops.render.render(write_still = True)
+
         bpy.context.scene.render.filepath = old_path
+        bpy.context.scene.render.image_settings.file_format = old_format
+
         return new_path
 
 
