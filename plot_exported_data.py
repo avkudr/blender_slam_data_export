@@ -3,7 +3,7 @@ import sys
 import os
 import importlib
 
-module_path = os.path.join(os.path.abspath(os.getcwd()),"blender-slam-data-export/read_write_model.py")
+module_path = os.path.join(os.path.abspath(os.getcwd()),"blender-slam-data-export/colmap_io.py")
 
 import importlib.util
 spec = importlib.util.spec_from_file_location("*", module_path)

@@ -5,7 +5,7 @@ import collections
 # 1. http://colmap.github.io/format.html#text-format
 # 2. https://github.com/colmap/colmap/blob/dev/scripts/python/read_write_model.py
 #
-from . import read_write_model as colmap
+from . import colmap_io as colmap
 
 
 def export_points_3d(all_data, path):
