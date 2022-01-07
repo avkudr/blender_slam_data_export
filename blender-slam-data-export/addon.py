@@ -5,7 +5,10 @@ import os
 from . import export
 from . import camera
 
-
+ADDON_GLOBARL_DATA = {
+    'points_2d': {},
+    'points_3d': {}
+}
 class SlamDataExporter(bpy.types.Operator):
     """Export SLAM data (projected vertices, camera intrinsics and extrinsics, 3D points)"""
     bl_idname = "render.save_slam_data"
@@ -90,7 +93,7 @@ class SlamDataExporter(bpy.types.Operator):
         frame_indices = self.get_frame_indices()
 
         all_data = {}
-        all_data["points_3d"] = self.get_all_vertices()
+        all_data["points_3d"] = {}
         all_data["frames"] = {}
 
         output_dir = self.get_render_output_path()
@@ -102,23 +105,25 @@ class SlamDataExporter(bpy.types.Operator):
             print('Processing frame ', frame_idx)
             self.go_to_frame(frame_idx)
 
+            camera_id = frame_idx
+            image_name = output_image_dir + ("/image_%d.png" % camera_id)
+            intr = camera.get_camera_intrinsics(scene)
+            pose = camera.get_camera_pose(scene)
+
             bpy.ops.render.render(write_still = False)
-            print("Crazyyy", scene['mydataparams'])
 
-
-            #camera_id = frame_idx
-            #image_name = output_image_dir + ("/image_%d.png" % camera_id)
-            #intr = camera.get_camera_intrinsics(scene)
-            #pose = camera.get_camera_pose(scene)
+            points_2d = ADDON_GLOBARL_DATA['points_2d']
+            points_3d = ADDON_GLOBARL_DATA['points_3d']
 
             #points_2d = camera.project_point(scene, all_data["points_3d"])
 
-            #all_data["frames"][camera_id] = {
-            #    "image_name": image_name,
-            #    "intrinsics": intr,
-            #    "pose": pose,
-            #    "points_2d": points_2d
-            #}
+            all_data["points_3d"] = {**all_data["points_3d"], **points_3d}
+            all_data["frames"][camera_id] = {
+                "image_name": image_name,
+                "intrinsics": intr,
+                "pose": pose,
+                "points_2d": points_2d
+            }
 
             #if scene.slam_export_render_images:
             #    self.render_image(output_dir, image_name)

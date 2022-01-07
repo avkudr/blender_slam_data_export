@@ -28,6 +28,7 @@ bl_info = {
 }
 
 from . import addon
+from . import camera
 
 PROPS = [
     ('slam_export_render_images', bpy.props.BoolProperty(name='Render images', default=True)),
@@ -72,9 +73,23 @@ class CustomRenderEngine(bpy.types.RenderEngine):
     def render(self, depsgraph):
         scene = depsgraph.scene
         
-        # update_progress
-        print('Hello from custom renderer: ', scene.frame_current)
-        scene['mydataparams'] = 5
+        print('dsdsdsdsdsd')
+        points_3d = {}
+        for object_instance in depsgraph.object_instances:
+            obj = object_instance.object
+
+            if obj.type != "MESH":
+                continue
+            obj_eval = obj.evaluated_get(depsgraph)
+
+            vertices_dict = {obj.name + '.' + str(v.index): obj.matrix_world @ v.co for v in obj_eval.data.vertices}
+            points_3d = {**points_3d, **vertices_dict}
+
+        points_2d = camera.project_point(scene, depsgraph, points_3d)
+
+        addon.ADDON_GLOBARL_DATA['points_2d'] = points_2d
+        addon.ADDON_GLOBARL_DATA['points_3d'] = points_3d
+
         
     def view_update(self, context, depsgraph):
         pass

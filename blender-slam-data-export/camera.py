@@ -79,15 +79,12 @@ def is_in_camera_field_of_view(camera, pt_in_camera_frame):
 
      return True
 
-def project_point(scene, vertices, limit=1e-4):
+def project_point(scene, depsgraph, vertices, limit=1e-4):
      # Threshold to test if ray cast corresponds to the original vertex
      
      camera = scene.camera
 
      points = {}
-
-     depsgraph = bpy.context.evaluated_depsgraph_get()
-     depsgraph.update()
 
      resolution_x = bpy.context.scene.render.resolution_x
      resolution_y = bpy.context.scene.render.resolution_y
@@ -112,10 +109,10 @@ def project_point(scene, vertices, limit=1e-4):
           # To avoid hitting the vertex itself we start the cast from some very
           # small offset towards the camera
           offset = 1e-4
-          is_something_hit,location,_,_,_,_ = scene.ray_cast(depsgraph, v + offset * direction, direction, distance=max_distance )
+          is_something_hit,_,_,_,_,_ = scene.ray_cast(depsgraph, v + offset * direction, direction, distance=max_distance )
           
           # if we are hitting nothing
-          if is_something_hit == False: # or (v - location).length < limit:
+          if is_something_hit == False:
                # y axis is inverted in blender
                points[id] = ([resolution_x * co2D.x, resolution_y * (1-co2D.y)], cnt)
                cnt = cnt + 1     

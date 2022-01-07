@@ -2,6 +2,7 @@ import cv2
 import sys
 import os
 import importlib
+import numpy as np
 
 module_path = os.path.join(os.path.abspath(os.getcwd()),"blender-slam-data-export/colmap_io.py")
 
@@ -16,7 +17,7 @@ cameras, images, points3D = colmap.read_model(path, ".txt")
 for image_id, image_data in images.items():
     image_file = os.path.join(path, image_data.name)
 
-    image = cv2.imread(image_file)
+    image = np.zeros((1080,1920,3), np.uint8) #cv2.imread(image_file)
     
     points_2d = image_data.xys
     for pt in points_2d:
