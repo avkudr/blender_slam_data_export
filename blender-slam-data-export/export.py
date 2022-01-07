@@ -18,6 +18,8 @@ def export_points_3d(all_data, path):
     rgb = [255,0,0]
     error = 0
 
+    id_to_idx = all_data["id_to_idx"]
+    
     for id, pt3d in all_data["points_3d"].items():
 
         image_ids = []
@@ -25,12 +27,12 @@ def export_points_3d(all_data, path):
         for frame_idx, frame_data in all_data["frames"].items():
             if id in frame_data["points_2d"]:
                 image_ids.append(frame_idx)
-                point2D_idxs.append(frame_data["points_2d"][id][2])
+                point2D_idxs.append(frame_data["points_2d"][id][1])
             
         if len(image_ids) == 0:
             continue
 
-        points_3d[id] = colmap.Point3D(id, pt3d[:], rgb, error, image_ids, point2D_idxs)
+        points_3d[id_to_idx[id]] = colmap.Point3D(id_to_idx[id], pt3d[:], rgb, error, image_ids, point2D_idxs)
 
     colmap.write_points3D_text(points_3d, os.path.join(path,"points3D.txt"))
 
@@ -44,23 +46,20 @@ def export_images(all_data, path):
     """
     images = {}
 
+    id_to_idx = all_data["id_to_idx"]
+
     for frame_idx, frame_data in all_data["frames"].items():
         q = frame_data["pose"].q
         t = frame_data["pose"].t
-
-        #q = q.inverted()
-        #t = q @ q @ t
-        #t = q @ t
-        #q = q.inverted()
 
         camera_id = frame_idx
         name = frame_data["image_name"]
 
         xys = []
         point3D_ids = []
-        for idx, pt2d in frame_data["points_2d"].items():
-            xys.append(pt2d[0:2])
-            point3D_ids.append(idx)
+        for id, pt2d in frame_data["points_2d"].items():
+            xys.append(pt2d[0])
+            point3D_ids.append(id_to_idx[id])
 
         c = colmap.BaseImage(frame_idx, [q.w, q.x, q.y, q.z], t[:], camera_id, name, xys, point3D_ids)
         images[frame_idx] = c

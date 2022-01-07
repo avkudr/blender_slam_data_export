@@ -88,10 +88,9 @@ def project_point(scene, depsgraph, vertices, limit=1e-4):
 
      resolution_x = bpy.context.scene.render.resolution_x
      resolution_y = bpy.context.scene.render.resolution_y
-
-     index_2d_pt = 0
      
-     for i, v in vertices.items():          
+     cnt = 0
+     for id, v in vertices.items():     
           # Get the 2D projection of the vertex
           co2D = world_to_camera_view( scene, camera, v )
 
@@ -111,10 +110,10 @@ def project_point(scene, depsgraph, vertices, limit=1e-4):
           # if we are hitting nothing or we are hitting the vertex itself
           if is_something_hit == False or (v - location).length < limit:
                # y axis is inverted in blender
-               points[i] = [resolution_x * co2D.x, resolution_y * (1-co2D.y), index_2d_pt]
-               index_2d_pt = index_2d_pt + 1
+               points[id] = ([resolution_x * co2D.x, resolution_y * (1-co2D.y)], cnt)
+               cnt = cnt + 1     
 
-          if i % 50 == 0:
-               print("processing vertex: ", i, len(vertices))
+          if cnt % 50 == 0:
+               print("processing vertex: ", id, len(vertices))
                
      return points

@@ -54,11 +54,6 @@ class SlamDataExporter(bpy.types.Operator):
         points_3d = {}
         depsgraph = bpy.context.evaluated_depsgraph_get()
 
-        # each vertex (3d point) gets a unique id (integer)
-        # .. this works only if, during animation, there are no new objects entering
-        # the scene. \todo the approach has to be revised
-        cnt = 0
-
         for obj in bpy.context.scene.objects:
             if obj.type != "MESH":
                 continue
@@ -67,10 +62,8 @@ class SlamDataExporter(bpy.types.Operator):
 
             obj_eval = obj.evaluated_get(depsgraph)
             verts = [obj.matrix_world @ v.co for v in obj_eval.data.vertices]
-            vertices_dict = {int(i + cnt): v  for i, v in enumerate(verts)}
+            vertices_dict = {obj.name + '.' + str(i): v  for i, v in enumerate(verts)}
             points_3d = {**points_3d, **vertices_dict} # merge dictionaries vertices_dict
-            cnt = cnt + len(vertices_dict)
-
 
         return points_3d, depsgraph
 
@@ -131,6 +124,8 @@ class SlamDataExporter(bpy.types.Operator):
             if scene.slam_export_render_images:
                 self.render_image(output_dir, image_name)
 
+
+        all_data["id_to_idx"] = {id: idx for idx,(id,v) in enumerate(all_data["points_3d"].items())}
         export.export_data(all_data, path=self.get_render_output_path())
 
         print('Done')
