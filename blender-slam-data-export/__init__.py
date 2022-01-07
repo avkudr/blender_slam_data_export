@@ -19,25 +19,44 @@ bl_info = {
     "description" : "Export SLAM data in ETH3D format: 3d vertices, 2d projections, camera poses, etc.",
     "blender" : (3, 0, 0),
     "version" : (0, 0, 1),
-    "location" : "Render > Save SLAM data",
+    "location" : "Sidebar > ExportSLAM",
     "warning" : "",
-    "url": "https://github.com/avkudr/blender_slam_export",
-    "wiki_url": "https://github.com/avkudr/blender_slam_export",
-    "tracker_url": "https://github.com/avkudr/blender_slam_export/issues",
+    "url": "https://github.com/avkudr/blender-slam-data-export",
+    "wiki_url": "https://github.com/avkudr/blender-slam-data-export",
+    "tracker_url": "https://github.com/avkudr/blender-slam-data-export/issues",
     "category": "Import-Export"
 }
 
 from . import addon
 
-def menu_func(self, context):
-    self.layout.operator(addon.SlamDataExporter.bl_idname)
+PROPS = [
+    ('slam_export_render_images', bpy.props.BoolProperty(name='Render images', default=True)),
+]
+
+class SlamDataExporterPanel(bpy.types.Panel):
+    bl_idname = 'VIEW3D_PT_slam_data_exporter'
+    bl_label = 'Export SLAM data'
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "ExportSLAM"
+
+    def draw(self, context):
+        col = self.layout.column()
+        col.label(text='SLAM data exporter tool')
+        col.prop(context.scene, "slam_export_render_images")
+        col.operator(addon.SlamDataExporter.bl_idname, text='Export')
+
 
 def register():
-    print("Addon registration")
+    for (prop_name, prop_value) in PROPS:
+        setattr(bpy.types.Scene, prop_name, prop_value)
+
     bpy.utils.register_class(addon.SlamDataExporter)
-    bpy.types.TOPBAR_MT_render.append(menu_func)  # Adds the new operator to an existing menu.
+    bpy.utils.register_class(SlamDataExporterPanel)
 
 def unregister():
-    print("Addon deregistration")
-    bpy.types.TOPBAR_MT_render.remove(menu_func)
+    for (prop_name, _) in PROPS:
+        delattr(bpy.types.Scene, prop_name)
+
+    bpy.utils.unregister_class(SlamDataExporterPanel)
     bpy.utils.unregister_class(addon.SlamDataExporter)

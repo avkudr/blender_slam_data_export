@@ -118,7 +118,8 @@ class SlamDataExporter(bpy.types.Operator):
                 "points_2d": points_2d
             }
 
-            self.render_image(output_dir, image_name)
+            if scene.slam_export_render_images:
+                self.render_image(output_dir, image_name)
 
         export.export_data(all_data, path=self.get_render_output_path())
 
