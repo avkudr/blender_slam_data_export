@@ -13,9 +13,6 @@ spec.loader.exec_module(colmap)
 path = "/tmp/blender_addon/"
 cameras, images, points3D = colmap.read_model(path, ".txt")
 
-print(cameras)
-print(images)
-
 for image_id, image_data in images.items():
     image_file = os.path.join(path, image_data.name)
 

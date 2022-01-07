@@ -59,8 +59,7 @@ class SlamDataExporter(bpy.types.Operator):
                 continue
 
             obj_eval = obj.evaluated_get(depsgraph)
-            verts = [obj.matrix_world @ v.co for v in obj_eval.data.vertices]
-            vertices_dict = {obj.name + '.' + str(i): v  for i, v in enumerate(verts)}
+            vertices_dict = {obj.name + '.' + str(v.index): obj.matrix_world @ v.co for v in obj_eval.data.vertices}
             points_3d = {**points_3d, **vertices_dict} # merge dictionaries vertices_dict
 
         return points_3d
