@@ -27,7 +27,7 @@ for image_id, image_data in images.items():
     
     points_2d = image_data.xys
     for pt in points_2d:
-        cv2.circle(image,(int(pt[0]),int(pt[1])), 2, (0,0,255), -1)
+        cv2.circle(image,(int(pt[0]),int(pt[1])), 1, (0,0,255), -1)
 
     cv2.namedWindow("image")
     cv2.imshow("image", image)
