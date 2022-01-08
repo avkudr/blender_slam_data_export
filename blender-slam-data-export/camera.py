@@ -1,10 +1,13 @@
 import collections
 import numpy as np
+import sys
 
 import bpy
 import mathutils
 from bpy_extras.view3d_utils import location_3d_to_region_2d
 from bpy_extras.object_utils import world_to_camera_view
+
+from . import utils
 
 CameraIntrinsics = collections.namedtuple(
      "CameraIntrinsics", ["K", "dist", "width", "height"])
@@ -92,6 +95,11 @@ def project_point(scene, depsgraph, vertices, limit=1e-4):
      camera_origin = camera.matrix_world.to_translation()
 
      cnt = 0
+     
+     suffix =' Frame %i/%i (%i verts)' % (scene.frame_current, scene.frame_end, len(vertices))
+     progress_bar = utils.ProgressBar(len(vertices),suffix=suffix,every=200)
+
+     count_processed = 0
      for id, v in vertices.items():     
           # Get the 2D projection of the vertex
           co2D = world_to_camera_view(scene, camera, v )
@@ -99,25 +107,24 @@ def project_point(scene, depsgraph, vertices, limit=1e-4):
           # By default, deselect it
           #obj.data.vertices[i].select = False
           
-          if not is_in_camera_field_of_view(camera, co2D):
-               continue
-          
-          # Try a ray cast, in order to test the vertex visibility from the camera
-          direction = (camera_origin - v).normalized()
-          max_distance = (camera_origin - v).length # camera far clip
-          
-          # To avoid hitting the vertex itself we start the cast from some very
-          # small offset towards the camera
-          offset = 1e-4
-          is_something_hit,_,_,_,_,_ = scene.ray_cast(depsgraph, v + offset * direction, direction, distance=max_distance )
-          
-          # if we are hitting nothing
-          if is_something_hit == False:
-               # y axis is inverted in blender
-               points[id] = ([resolution_x * co2D.x, resolution_y * (1-co2D.y)], cnt)
-               cnt = cnt + 1     
-
-          #if cnt % 50 == 0:
-          #     print("processing vertex: ", id, len(vertices))
+          if is_in_camera_field_of_view(camera, co2D):          
+               # Try a ray cast, in order to test the vertex visibility from the camera
+               direction = (camera_origin - v).normalized()
+               max_distance = (camera_origin - v).length # camera far clip
                
+               # To avoid hitting the vertex itself we start the cast from some very
+               # small offset towards the camera
+               offset = 1e-4
+               is_something_hit,_,_,_,_,_ = scene.ray_cast(depsgraph, v + offset * direction, direction, distance=max_distance )
+               
+               # if we are hitting nothing
+               if is_something_hit == False:
+                    # y axis is inverted in blender
+                    points[id] = ([resolution_x * co2D.x, resolution_y * (1-co2D.y)], cnt)
+                    cnt = cnt + 1     
+
+          #if count_processed % 1 or count_processed == len(vertices) - 1:
+          count_processed = count_processed + 1
+          progress_bar.draw(count_processed)
+
      return points

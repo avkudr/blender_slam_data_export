@@ -5,7 +5,7 @@ import os
 from . import export
 from . import camera
 
-ADDON_GLOBARL_DATA = {
+ADDON_GLOBAL_DATA = {
     'points_2d': {},
     'points_3d': {}
 }
@@ -50,26 +50,6 @@ class SlamDataExporter(bpy.types.Operator):
         bpy.context.scene.frame_set(frame)
         bpy.context.view_layer.update()
 
-    def get_all_vertices(self):
-        """
-        Returns a dictionary with objects and their respective vertices
-        in world coordinates
-        """
-        points_3d = {}
-        depsgraph = bpy.context.evaluated_depsgraph_get()
-
-        for obj in bpy.context.scene.objects:
-            if obj.type != "MESH":
-                continue
-            if obj.hide_viewport or obj.hide_render:
-                continue
-
-            obj_eval = obj.evaluated_get(depsgraph)
-            vertices_dict = {obj.name + '.' + str(v.index): obj.matrix_world @ v.co for v in obj_eval.data.vertices}
-            points_3d = {**points_3d, **vertices_dict} # merge dictionaries vertices_dict
-
-        return points_3d
-
 
     def render_image(self, output_dir, image_name):
         old_format = bpy.context.scene.render.image_settings.file_format
@@ -85,12 +65,21 @@ class SlamDataExporter(bpy.types.Operator):
 
         return new_path
 
+    def set_render_engine(self, engine):
+        bpy.context.scene.render.engine = engine
+
+    def set_export_render_engine(self):
+        bpy.context.scene.render.engine = 'CUSTOM_SLAM_data_exporter'
 
     def execute(self, context):
+        print('SLAM data export...')
+
         scene = bpy.context.scene
         self.ensure_object_mode()
 
         frame_indices = self.get_frame_indices()
+
+        original_render_engine = bpy.context.scene.render.engine
 
         all_data = {}
         all_data["points_3d"] = {}
@@ -102,7 +91,6 @@ class SlamDataExporter(bpy.types.Operator):
             os.makedirs(os.path.join(output_dir, output_image_dir), exist_ok = True)
 
         for frame_idx in frame_indices:
-            print('Processing frame ', frame_idx)
             self.go_to_frame(frame_idx)
 
             camera_id = frame_idx
@@ -110,10 +98,11 @@ class SlamDataExporter(bpy.types.Operator):
             intr = camera.get_camera_intrinsics(scene)
             pose = camera.get_camera_pose(scene)
 
+            self.set_export_render_engine()
             bpy.ops.render.render(write_still = False)
 
-            points_2d = ADDON_GLOBARL_DATA['points_2d']
-            points_3d = ADDON_GLOBARL_DATA['points_3d']
+            points_2d = ADDON_GLOBAL_DATA['points_2d']
+            points_3d = ADDON_GLOBAL_DATA['points_3d']
 
             #points_2d = camera.project_point(scene, all_data["points_3d"])
 
@@ -125,12 +114,13 @@ class SlamDataExporter(bpy.types.Operator):
                 "points_2d": points_2d
             }
 
-            #if scene.slam_export_render_images:
-            #    self.render_image(output_dir, image_name)
+            if scene.slam_export_render_images:
+                self.set_render_engine(original_render_engine)
+                self.render_image(output_dir, image_name)
 
 
         all_data["id_to_idx"] = {id: idx for idx,(id,v) in enumerate(all_data["points_3d"].items())}
         export.export_data(all_data, path=self.get_render_output_path())
 
-        print('Done')
+        print('SLAM data export... done')
         return {'FINISHED'}

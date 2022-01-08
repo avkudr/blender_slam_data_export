@@ -73,7 +73,6 @@ class CustomRenderEngine(bpy.types.RenderEngine):
     def render(self, depsgraph):
         scene = depsgraph.scene
         
-        print('dsdsdsdsdsd')
         points_3d = {}
         for object_instance in depsgraph.object_instances:
             obj = object_instance.object
@@ -87,8 +86,8 @@ class CustomRenderEngine(bpy.types.RenderEngine):
 
         points_2d = camera.project_point(scene, depsgraph, points_3d)
 
-        addon.ADDON_GLOBARL_DATA['points_2d'] = points_2d
-        addon.ADDON_GLOBARL_DATA['points_3d'] = points_3d
+        addon.ADDON_GLOBAL_DATA['points_2d'] = points_2d
+        addon.ADDON_GLOBAL_DATA['points_3d'] = points_3d
 
         
     def view_update(self, context, depsgraph):
