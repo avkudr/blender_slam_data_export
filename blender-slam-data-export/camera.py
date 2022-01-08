@@ -10,7 +10,7 @@ from bpy_extras.object_utils import world_to_camera_view
 from . import utils
 
 CameraIntrinsics = collections.namedtuple(
-    "CameraIntrinsics", ["K", "dist", "width", "height"]
+    "CameraIntrinsics", ["K", "width", "height"]
 )
 
 CameraPose = collections.namedtuple("CameraPose", ["q", "t"])
@@ -70,8 +70,7 @@ def get_camera_intrinsics(scene):
 
     K = np.array([[f_x, 0, c_x], [0, f_y, c_y], [0, 0, 1]], dtype=np.float32)
 
-    dist = np.array([0, 0, 0, 0])
-    return CameraIntrinsics(K, dist, w, h)
+    return CameraIntrinsics(K, w, h)
 
 
 def is_in_camera_field_of_view(camera, pt_in_camera_frame):

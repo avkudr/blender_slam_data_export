@@ -78,12 +78,12 @@ def export_cameras(all_data, path):
     """
     cameras = {}
     for frame_idx, frame_data in all_data["frames"].items():
-        camera_model = colmap.CAMERA_MODEL_NAMES["OPENCV"].model_name
+        camera_model = colmap.CAMERA_MODEL_NAMES["PINHOLE"].model_name
         intrinsics = frame_data["intrinsics"]
         # distortion is not supported :(
         K = intrinsics.K
         fx, fy, cx, cy = K[0][0], K[1][1], K[0][2], K[1][2]
-        params = [fx, fy, cx, cy, *intrinsics.dist]
+        params = [fx, fy, cx, cy]
         c = colmap.Camera(
             frame_idx,
             camera_model,

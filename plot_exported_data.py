@@ -57,7 +57,7 @@ for image_id, image_data in images.items():
     # --- get intrinsics matrix
 
     params = camera.params
-    fx, fy, cx, cy, _, _, _, _ = params
+    fx, fy, cx, cy = params
     K = np.matrix([[fx, 0, cx], [0, fy, cy], [0, 0, 1]], dtype=np.float32)
 
     # --- get extrinsics matrix
