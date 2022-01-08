@@ -81,46 +81,51 @@ class SlamDataExporter(bpy.types.Operator):
 
         original_render_engine = bpy.context.scene.render.engine
 
-        all_data = {}
-        all_data["points_3d"] = {}
-        all_data["frames"] = {}
+        try:
+            all_data = {}
+            all_data["points_3d"] = {}
+            all_data["frames"] = {}
 
-        output_dir = self.get_render_output_path()
-        output_image_dir = "images"
-        if scene.slam_export_render_images:
-            os.makedirs(os.path.join(output_dir, output_image_dir), exist_ok = True)
-
-        for frame_idx in frame_indices:
-            self.go_to_frame(frame_idx)
-
-            camera_id = frame_idx
-            image_name = output_image_dir + ("/image_%d.png" % camera_id)
-            intr = camera.get_camera_intrinsics(scene)
-            pose = camera.get_camera_pose(scene)
-
-            self.set_export_render_engine()
-            bpy.ops.render.render(write_still = False)
-
-            points_2d = ADDON_GLOBAL_DATA['points_2d']
-            points_3d = ADDON_GLOBAL_DATA['points_3d']
-
-            #points_2d = camera.project_point(scene, all_data["points_3d"])
-
-            all_data["points_3d"] = {**all_data["points_3d"], **points_3d}
-            all_data["frames"][camera_id] = {
-                "image_name": image_name,
-                "intrinsics": intr,
-                "pose": pose,
-                "points_2d": points_2d
-            }
-
+            output_dir = self.get_render_output_path()
+            output_image_dir = "images"
             if scene.slam_export_render_images:
-                self.set_render_engine(original_render_engine)
-                self.render_image(output_dir, image_name)
+                os.makedirs(os.path.join(output_dir, output_image_dir), exist_ok = True)
+
+            for frame_idx in frame_indices:
+                self.go_to_frame(frame_idx)
+
+                camera_id = frame_idx
+                image_name = output_image_dir + ("/image_%d.png" % camera_id)
+                intr = camera.get_camera_intrinsics(scene)
+                pose = camera.get_camera_pose(scene)
+
+                self.set_export_render_engine()
+                bpy.ops.render.render(write_still = False)
+
+                points_2d = ADDON_GLOBAL_DATA['points_2d']
+                points_3d = ADDON_GLOBAL_DATA['points_3d']
+
+                #points_2d = camera.project_point(scene, all_data["points_3d"])
+
+                all_data["points_3d"] = {**all_data["points_3d"], **points_3d}
+                all_data["frames"][camera_id] = {
+                    "image_name": image_name,
+                    "intrinsics": intr,
+                    "pose": pose,
+                    "points_2d": points_2d
+                }
+
+                if scene.slam_export_render_images:
+                    self.set_render_engine(original_render_engine)
+                    self.render_image(output_dir, image_name)
 
 
-        all_data["id_to_idx"] = {id: idx for idx,(id,v) in enumerate(all_data["points_3d"].items())}
-        export.export_data(all_data, path=self.get_render_output_path())
+            all_data["id_to_idx"] = {id: idx for idx,(id,v) in enumerate(all_data["points_3d"].items())}
+            export.export_data(all_data, path=self.get_render_output_path())
+        except:
+            self.set_render_engine(original_render_engine)
+            print('SLAM data export... failed')
+            return {'CANCELLED'}
 
         print('SLAM data export... done')
         return {'FINISHED'}

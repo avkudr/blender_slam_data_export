@@ -11,7 +11,7 @@ spec = importlib.util.spec_from_file_location("*", module_path)
 colmap = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(colmap)
 
-path = "/tmp/blender_addon/"
+path = "/tmp/"
 cameras, images, points3D = colmap.read_model(path, ".txt")
 
 for image_id, image_data in images.items():
