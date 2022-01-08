@@ -4,9 +4,12 @@ import os
 import importlib
 import numpy as np
 
-module_path = os.path.join(os.path.abspath(os.getcwd()),"blender-slam-data-export/colmap_io.py")
+module_path = os.path.join(
+    os.path.abspath(os.getcwd()), "blender-slam-data-export/colmap_io.py"
+)
 
 import importlib.util
+
 spec = importlib.util.spec_from_file_location("*", module_path)
 colmap = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(colmap)
@@ -22,12 +25,12 @@ for image_id, image_data in images.items():
         image = cv2.imread(image_file)
     else:
         camera = cameras[image_data.camera_id]
-        w,h = camera.width, camera.height
-        image = np.zeros((h,w,3), np.uint8)
-    
+        w, h = camera.width, camera.height
+        image = np.zeros((h, w, 3), np.uint8)
+
     points_2d = image_data.xys
     for pt in points_2d:
-        cv2.circle(image,(int(pt[0]),int(pt[1])), 1, (0,0,255), -1)
+        cv2.circle(image, (int(pt[0]), int(pt[1])), 1, (0, 0, 255), -1)
 
     cv2.namedWindow("image")
     cv2.imshow("image", image)

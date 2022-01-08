@@ -3,6 +3,7 @@ import bpy
 from . import addon
 from . import camera
 
+
 class VertexRayCastEngine(bpy.types.RenderEngine):
     # These three members are used by blender to set up the
     # RenderEngine; define its internal name, visible name and capabilities.
@@ -28,7 +29,7 @@ class VertexRayCastEngine(bpy.types.RenderEngine):
     # small preview for materials, world and lights.
     def render(self, depsgraph):
         scene = depsgraph.scene
-        
+
         points_3d = {}
         for object_instance in depsgraph.object_instances:
             obj = object_instance.object
@@ -37,15 +38,17 @@ class VertexRayCastEngine(bpy.types.RenderEngine):
                 continue
             obj_eval = obj.evaluated_get(depsgraph)
 
-            vertices_dict = {obj.name + '.' + str(v.index): obj.matrix_world @ v.co for v in obj_eval.data.vertices}
+            vertices_dict = {
+                obj.name + "." + str(v.index): obj.matrix_world @ v.co
+                for v in obj_eval.data.vertices
+            }
             points_3d = {**points_3d, **vertices_dict}
 
         points_2d = camera.project_point(scene, depsgraph, points_3d)
 
-        addon.ADDON_GLOBAL_DATA['points_2d'] = points_2d
-        addon.ADDON_GLOBAL_DATA['points_3d'] = points_3d
+        addon.ADDON_GLOBAL_DATA["points_2d"] = points_2d
+        addon.ADDON_GLOBAL_DATA["points_3d"] = points_3d
 
-        
     def view_update(self, context, depsgraph):
         pass
 
