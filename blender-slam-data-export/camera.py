@@ -27,12 +27,17 @@ def get_camera_pose(scene):
     ctw = cTw.to_translation()
     cqw = cTw.to_quaternion().normalized()
 
-    # for some reason, this rotation has to be applied for
-    # the correct visualization inside colmap gui
-    qy = mathutils.Quaternion([0, 0, 1, 0])
+    # to convert from blender to opencv convention
+    # blender: +x - right, +y -   up, +z - to the back as seen from the image
+    #          image_origin: bottom-left
+    # opencv:  +x - right, +y - down, +z - to the front as seen from the image
+    #          image_origin: top-left
 
-    t = qy.inverted() @ cTw.to_translation()
-    q = qy @ cTw.to_quaternion().normalized()
+    qy = mathutils.Quaternion([0, 0, 1, 0])
+    qz = mathutils.Quaternion([0, 0, 0, 1])
+
+    t = qz @ qy @ cTw.to_translation()
+    q = qz @ qy @ cTw.to_quaternion().normalized()
 
     return CameraPose(q, t)
 
