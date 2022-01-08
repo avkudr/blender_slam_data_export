@@ -17,7 +17,13 @@ cameras, images, points3D = colmap.read_model(path, ".txt")
 for image_id, image_data in images.items():
     image_file = os.path.join(path, image_data.name)
 
-    image = np.zeros((1080,1920,3), np.uint8) #cv2.imread(image_file)
+    image = None
+    if os.path.exists(image_file):
+        image = cv2.imread(image_file)
+    else:
+        camera = cameras[image_data.camera_id]
+        w,h = camera.width, camera.height
+        image = np.zeros((h,w,3), np.uint8)
     
     points_2d = image_data.xys
     for pt in points_2d:
