@@ -70,7 +70,7 @@ class SlamDataExporter(bpy.types.Operator):
         bpy.context.scene.render.engine = "CUSTOM_SLAM_data_exporter"
 
     def execute(self, context):
-        print("SLAM data export...")
+        self.report({'INFO'}, "SLAM data export... started")
 
         scene = bpy.context.scene
         self.ensure_object_mode()
@@ -121,10 +121,11 @@ class SlamDataExporter(bpy.types.Operator):
                 id: idx for idx, (id, v) in enumerate(all_data["points_3d"].items())
             }
             export.export_data(all_data, path=self.get_render_output_path())
-        except:
+
+        except Exception as e: 
             self.set_render_engine(original_render_engine)
-            print("SLAM data export... failed")
+            self.report({'ERROR'}, "SLAM data export... failed:\n %s" % e)
             return {"CANCELLED"}
 
-        print("SLAM data export... done")
+        self.report({'INFO'}, "SLAM data export... done")
         return {"FINISHED"}
