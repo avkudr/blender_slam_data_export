@@ -48,9 +48,12 @@ def get_camera_intrinsics(scene):
     """
     cam = scene.camera.data
 
-    # assume angles describe the horizontal field of view
-    assert cam.sensor_fit != "VERTICAL"
+    if cam.type != 'PERSP':
+        raise Exception("Only perspective cameras are supported")
 
+    if scene.render.resolution_x < scene.render.resolution_y:
+        raise Exception("Vertical sensor fit is not supported. Make sure image_width_px > image_height_px")
+        
     f_in_mm = cam.lens
     sensor_width_in_mm = cam.sensor_width
 
