@@ -1,6 +1,5 @@
 import bpy
 
-
 def select_scene(scene_name):
     if scene_name not in bpy.data.scenes:
         raise Exception("No scene with the name %s" % scene_name)

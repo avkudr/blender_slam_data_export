@@ -4,7 +4,7 @@ import argparse
 
 path_render_script = "blender_main.py"
 
-TESTS = {"test_camera_intrinsics": ("test_camera_intrinsics.py", "test_cameras.blend")}
+TESTS = {"test_cameras": ("test_cameras.py", "test_cameras.blend")}
 
 def run(name, path_to_blender, path_to_py_test, path_to_blend_file):
     print('Running test: %s' % name)
@@ -33,4 +33,3 @@ if __name__ == "__main__":
     else:
         python_script, blend_file = TESTS[args.s]
         run(args.s, path_blender_executable, python_script, blend_file)
-

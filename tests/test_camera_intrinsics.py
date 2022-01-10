@@ -5,8 +5,6 @@ import os
 import sys
 import numpy as np
 
-np.set_printoptions(precision=5)
-
 blend_dir = os.path.dirname(bpy.data.filepath)
 if blend_dir not in sys.path:
     sys.path.append(blend_dir)
@@ -25,14 +23,15 @@ class TestCameraIntrinsics(unittest.TestCase):
         camera = common.select_camera("Camera_30mm.A")
 
         self.assertEqual(camera.data.lens, 30)
+        self.assertEqual(camera.data.sensor_width, 36)
 
         K, w, h = blender_slam_data_export.camera.get_camera_intrinsics(camera, scene)
 
         K_expected = np.matrix(
             [
-                [1.6e03, 0.0e00, 9.6e02],
-                [0.0e00, 1.6e03, 5.4e02],
-                [0.0e00, 0.0e00, 1.0e00],
+                [1600, 0.0, w / 2],
+                [0.0, 1600, h / 2],
+                [0.0, 0.0, 1.0],
             ]
         )
 
@@ -45,14 +44,15 @@ class TestCameraIntrinsics(unittest.TestCase):
         camera = common.select_camera("Camera_50mm.A")
 
         self.assertEqual(camera.data.lens, 50)
+        self.assertEqual(camera.data.sensor_width, 36)
 
         K, w, h = blender_slam_data_export.camera.get_camera_intrinsics(camera, scene)
 
         K_expected = np.matrix(
             [
-                [2.666667e03, 0.000000e00, 9.600000e02],
-                [0.000000e00, 2.666667e03, 5.400000e02],
-                [0.000000e00, 0.000000e00, 1.000000e00],
+                [2666.6667, 0.0, w / 2],
+                [0.0, 2666.6667, h / 2],
+                [0.0, 0.0, 1.0],
             ]
         )
 
