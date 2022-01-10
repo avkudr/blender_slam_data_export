@@ -94,8 +94,8 @@ class SlamDataExporter(bpy.types.Operator):
 
                 camera_id = frame_idx
                 image_name = output_image_dir + ("/image_%d.png" % camera_id)
-                intr = camera.get_camera_intrinsics(scene)
-                pose = camera.get_camera_pose(scene)
+                intr = camera.get_camera_intrinsics(scene.camera, scene)
+                pose = camera.get_camera_pose(scene.camera)
 
                 self.set_export_render_engine()
                 bpy.ops.render.render(write_still=False)

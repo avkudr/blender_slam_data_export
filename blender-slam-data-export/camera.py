@@ -9,18 +9,42 @@ from bpy_extras.object_utils import world_to_camera_view
 
 from . import utils
 
-CameraIntrinsics = collections.namedtuple(
-    "CameraIntrinsics", ["K", "width", "height"]
-)
+CameraIntrinsics = collections.namedtuple("CameraIntrinsics", ["K", "width", "height"])
 
 CameraPose = collections.namedtuple("CameraPose", ["q", "t"])
 
+def check_if_camera_valid(camera):
+    if camera is None:
+        raise TypeError(
+            "camera cannot be None"
+        ) 
 
-def get_camera_pose(scene):
+    if not isinstance(camera, bpy.types.Object):
+        raise TypeError(
+            "camera must be of type bpy.types.Object and not %s" % type(camera)
+        ) 
+
+    if not isinstance(camera.data, bpy.types.Camera):
+        raise TypeError(
+            "camera.data must be of type bpy.types.Camera and not %s" % type(camera)
+        ) 
+
+def check_if_scene_valid(scene):
+    if scene is None:
+        raise TypeError(
+            "scene cannot be None"
+        ) 
+
+    if not isinstance(scene, bpy.types.Scene):
+        raise TypeError(
+            "scene must be of type bpy.types.Scene and not %s" % type(scene)
+        )
+
+def get_camera_pose(camera):
     """
     Extract camera pose from the current scene for the current frame
     """
-    camera = scene.camera
+    check_if_camera_valid(camera)
 
     cTw = camera.matrix_world.inverted()
 
@@ -42,18 +66,23 @@ def get_camera_pose(scene):
     return CameraPose(q, t)
 
 
-def get_camera_intrinsics(scene):
+def get_camera_intrinsics(camera, scene):
     """
     Extract camera intrinsic parameters from the current scene for the current frame
     """
-    cam = scene.camera.data
+    check_if_camera_valid(camera)
+    check_if_scene_valid(scene)
 
-    if cam.type != 'PERSP':
-        raise Exception("Only perspective cameras are supported")
+    cam = camera.data
+
+    if cam.type != "PERSP":
+        raise ValueError("Only perspective cameras are supported")
 
     if scene.render.resolution_x < scene.render.resolution_y:
-        raise Exception("Vertical sensor fit is not supported. Make sure image_width_px > image_height_px")
-        
+        raise ValueError(
+            "Vertical sensor fit is not supported. Make sure image_width_px > image_height_px"
+        )
+
     f_in_mm = cam.lens
     sensor_width_in_mm = cam.sensor_width
 
@@ -77,6 +106,8 @@ def get_camera_intrinsics(scene):
 
 
 def is_in_camera_field_of_view(camera, pt_in_camera_frame):
+    check_if_camera_valid(camera)
+
     x, y, z = pt_in_camera_frame.x, pt_in_camera_frame.y, pt_in_camera_frame.z
 
     # If inside the camera view
@@ -92,7 +123,12 @@ def is_in_camera_field_of_view(camera, pt_in_camera_frame):
 def project_point(scene, depsgraph, vertices, limit=1e-4):
     # Threshold to test if ray cast corresponds to the original vertex
 
+    check_if_scene_valid(scene)
+
+    # must be the active camera of the scene. This function is called from
+    # the rendering engine, and rendering is done only for the active camera
     camera = scene.camera
+    check_if_camera_valid(camera)
 
     points = {}
 
