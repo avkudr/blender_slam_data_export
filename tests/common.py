@@ -5,7 +5,9 @@ def select_scene(scene_name):
     if scene_name not in bpy.data.scenes:
         raise Exception("No scene with the name %s" % scene_name)
 
-    bpy.context.window.scene = bpy.data.scenes[scene_name]
+    scene = bpy.data.scenes[scene_name]
+    bpy.context.window.scene = scene
+    return scene
 
 
 def select_camera(camera_name):
@@ -19,3 +21,4 @@ def select_camera(camera_name):
         )
 
     bpy.context.scene.camera = camera
+    return camera
