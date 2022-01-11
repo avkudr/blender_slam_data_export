@@ -13,14 +13,13 @@ git_root_dir = os.path.join(os.path.dirname(bpy.data.filepath), "..")
 if git_root_dir not in sys.path:
     sys.path.append(git_root_dir)
 
-import common
 import blender_slam_data_export
 
 
 class TestCameraIntrinsics(unittest.TestCase):
     def test_camera_30mm(self):
-        scene = common.select_scene("Scene1920x1080")
-        camera = common.select_camera("Camera_30mm.A")
+        scene = blender_slam_data_export.utils.select_scene("Scene1920x1080")
+        camera = blender_slam_data_export.utils.select_camera("Camera_30mm.A")
 
         self.assertEqual(camera.data.lens, 30)
         self.assertEqual(camera.data.sensor_width, 36)
@@ -40,8 +39,8 @@ class TestCameraIntrinsics(unittest.TestCase):
         np.testing.assert_array_almost_equal(K, K_expected, decimal=3)
 
     def test_camera_50mm(self):
-        scene = common.select_scene("Scene1920x1080")
-        camera = common.select_camera("Camera_50mm.A")
+        scene = blender_slam_data_export.utils.select_scene("Scene1920x1080")
+        camera = blender_slam_data_export.utils.select_camera("Camera_50mm.A")
 
         self.assertEqual(camera.data.lens, 50)
         self.assertEqual(camera.data.sensor_width, 36)
