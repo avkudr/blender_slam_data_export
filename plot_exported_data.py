@@ -4,15 +4,11 @@ import os
 import importlib
 import numpy as np
 
-module_path = os.path.join(
-    os.path.abspath(os.getcwd()), "blender-slam-data-export/colmap_io.py"
-)
+blend_dir = os.path.join(os.path.dirname(__file__),"blender_slam_data_export")
+if blend_dir not in sys.path:
+    sys.path.append(blend_dir)
 
-import importlib.util
-
-spec = importlib.util.spec_from_file_location("*", module_path)
-colmap = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(colmap)
+import colmap_io as colmap
 
 path = "/tmp/"
 cameras, images, points_3d = colmap.read_model(path, ".txt")
