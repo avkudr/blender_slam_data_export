@@ -8,6 +8,18 @@ Evaluating the performance of 3d reconstruction or SLAM is not an easy task. The
 
 ### Example
 
+Original render
+
+<img src="./docs/bear_original_render.gif" width="320" height="240" />
+
+Projected vertices
+
+<img src="./docs/bear_projected_vertices.gif" width="320" height="240" />
+
+The data exported by the add-on and imported in COLMAP-gui
+
+![](./docs/bear_colmap.png)
+
 
 ## Install
 
