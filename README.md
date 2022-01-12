@@ -1,5 +1,6 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![License: MIT](https://img.shields.io/badge/blender-2.8+-green)](https://www.blender.org/download/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Blender](https://img.shields.io/badge/blender-2.8+-blue)](https://www.blender.org/download/)
+[![COLMAP](https://img.shields.io/badge/export_format-colmap-blue)](http://colmap.github.io/)
 
 Export SLAM data 3D data from a blender scene in COLMAP format. This data can be used as the reference or ground truth for a variety of computer vision applications: 3d reconstruction, structure-from-motion, SLAM, tracking and many more. The add-on supports the export of **3d vertices**, **2d projections**, **camera poses**, and **camera intrinsic** parameters.
 
@@ -9,6 +10,7 @@ Evaluating the performance of 3d reconstruction or SLAM is not an easy task. The
 
 
 ## Install
+
 
 ### 1. Download the add-on
 
@@ -36,3 +38,11 @@ Example forder structure:
    images.txt
    points3D.txt
 ```
+
+## Acknowledgement
+
+### 3D models
+
+`blender_guru_teddy_bear.blend` is part of the [BlenderGuru tutorial](https://www.youtube.com/watch?v=Ebx2qbBlvh0&ab_channel=BlenderGuru) on youtube. This model was used to create images on the from page. Inside `blender_guru_teddy_bear` folder, you will find the blender file, and the SLAM data exported from it. The materials used are from [poliigon](https://www.poliigon.com/).
+
+`debug_pokemons.blend` scene was used for add-on debugging and the contains the [model](https://www.thingiverse.com/thing:1727376) downloaded from [thingiverse](www.thingiverse.com) 
