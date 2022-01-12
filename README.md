@@ -26,6 +26,10 @@ The original `*.blend` scene as well as the exported data can be found in the [e
 
 ## Usage
 
+- output same as for rendering
+- only active camera
+- only the frames selected in rendering pane
+- freezes during export
 
 ## Output format
 
