@@ -19,7 +19,9 @@ class SlamDataExporter(bpy.types.Operator):
         if bpy.context.mode == "OBJECT":
             return
 
-        assert bpy.ops.object.mode_set.poll()
+        if not bpy.ops.object.mode_set.poll():
+            raise Exception("Can't switch to object mode")
+            
         bpy.ops.object.mode_set(mode="OBJECT")
 
     def get_frame_indices(self):

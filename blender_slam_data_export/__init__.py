@@ -21,9 +21,9 @@ bl_info = {
     "version": (0, 0, 1),
     "location": "Sidebar > ExportSLAM",
     "warning": "",
-    "url": "https://github.com/avkudr/blender-slam-data-export",
-    "wiki_url": "https://github.com/avkudr/blender-slam-data-export",
-    "tracker_url": "https://github.com/avkudr/blender-slam-data-export/issues",
+    "url": "https://github.com/avkudr/blender_slam_data_export",
+    "wiki_url": "https://github.com/avkudr/blender_slam_data_export",
+    "tracker_url": "https://github.com/avkudr/blender_slam_data_export/issues",
     "category": "Import-Export",
 }
 
