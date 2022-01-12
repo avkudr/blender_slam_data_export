@@ -16,7 +16,7 @@ The data exported by the add-on and imported in COLMAP-gui
 
 ![](./docs/bear_colmap.png)
 
-
+The original `*.blend` scene as well as the exported data can be found in the [examples folder](https://github.com/avkudr/blender_slam_data_export/tree/main/examples/blender_guru_teddy_bear) folder. The model was downloaded from this [BlenderGuru tutorial](https://www.youtube.com/watch?v=Ebx2qbBlvh0&ab_channel=BlenderGuru).
 ## Install
 
 
