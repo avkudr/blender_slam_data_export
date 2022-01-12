@@ -1,3 +1,5 @@
+![](./docs/blender_addon_logo.jpg)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Blender](https://img.shields.io/badge/blender-2.8+-blue)](https://www.blender.org/download/)
 [![COLMAP](https://img.shields.io/badge/export_format-colmap-blue)](http://colmap.github.io/)
