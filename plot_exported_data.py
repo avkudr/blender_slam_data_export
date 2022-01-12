@@ -10,7 +10,7 @@ if blend_dir not in sys.path:
 
 import colmap_io as colmap
 
-path = "/tmp/"
+path = os.path.join(os.path.dirname(__file__),"examples","blender_guru_teddy_bear")
 cameras, images, points_3d = colmap.read_model(path, ".txt")
 
 
