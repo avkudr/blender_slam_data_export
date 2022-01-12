@@ -4,7 +4,7 @@
 
 Export SLAM data 3D data from a blender scene in COLMAP format. This data can be used as the reference or ground truth for a variety of computer vision applications: 3d reconstruction, structure-from-motion, SLAM, tracking and many more. The add-on supports the export of **3d vertices**, **2d projections**, **camera poses**, and **camera intrinsic** parameters.
 
-Evaluating the performance of 3d reconstruction or SLAM is not an easy task. The ground truch is often collected using special motion capture systems or LiDARs and it still not perfect. Using a rendering software, such as Blender, allows creating pefrect data for an arbitrary scene, for an arbitrary camera or a set of cameras, and for an arbitrary camera motion. For free!
+Evaluating the performance of 3d reconstruction or SLAM is not an easy task. The ground truch is often collected using special motion capture systems or LiDARs and it still not perfect. Using a rendering software, such as Blender, allows creating pefrect data, where the occlusions are already taken into account, for an arbitrary scene, with an arbitrary camera or a set of cameras, and for an arbitrary camera motion. For free!
 
 ### Example
 
