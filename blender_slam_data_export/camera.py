@@ -9,36 +9,81 @@ from bpy_extras.object_utils import world_to_camera_view
 
 from . import utils
 
-CameraIntrinsics = collections.namedtuple("CameraIntrinsics", ["K", "width", "height"])
 
-CameraPose = collections.namedtuple("CameraPose", ["q", "t"])
+class CameraIntrinsics:
+    def __init__(self, K, width, height):
+
+        assert np.issubdtype(K.dtype, np.floating)
+        assert K.shape == (3,3)
+
+        self.K = K
+        self.width = width
+        self.height = height
+
+    def __eq__(self, other: object) -> bool:
+        if self.width != other.width:
+            return False
+
+        if self.height != other.height:
+            return False
+
+        return np.allclose(self.K, other.K, atol=1e-9)
+
+
+class CameraIntrinsicsContainer:
+    def __init__(self):
+        self.map_idx_id = []
+        self.dict = {}
+
+    def add_intrinsic_list(self, intr_list):
+        for intr in intr_list:
+            self.add_intrinsic(intr)
+
+    def add_intrinsic(self, intr: CameraIntrinsics) -> int:
+        # compare with each value in dict
+        for id, intrinsics in self.dict.items():
+            if intr == intrinsics:
+                self.map_idx_id.append(id)
+                return id
+        
+        new_id = len(self.dict)
+
+        assert new_id not in self.dict
+
+        self.dict[new_id] = intr
+        self.map_idx_id.append(new_id)
+        return new_id
+
 
 def check_if_camera_valid(camera):
     if camera is None:
         raise TypeError(
             "camera cannot be None"
-        ) 
+        )
 
     if not isinstance(camera, bpy.types.Object):
         raise TypeError(
             "camera must be of type bpy.types.Object and not %s" % type(camera)
-        ) 
+        )
 
     if not isinstance(camera.data, bpy.types.Camera):
         raise TypeError(
-            "camera.data must be of type bpy.types.Camera and not %s" % type(camera)
-        ) 
+            "camera.data must be of type bpy.types.Camera and not %s" % type(
+                camera)
+        )
+
 
 def check_if_scene_valid(scene):
     if scene is None:
         raise TypeError(
             "scene cannot be None"
-        ) 
+        )
 
     if not isinstance(scene, bpy.types.Scene):
         raise TypeError(
             "scene must be of type bpy.types.Scene and not %s" % type(scene)
         )
+
 
 def get_camera_pose(camera):
     """
@@ -169,7 +214,8 @@ def project_point(scene, depsgraph, vertices, limit=1e-4):
             # if we are hitting nothing
             if is_something_hit == False:
                 # y axis is inverted in blender
-                points[id] = ([resolution_x * co2D.x, resolution_y * (1 - co2D.y)], cnt)
+                points[id] = (
+                    [resolution_x * co2D.x, resolution_y * (1 - co2D.y)], cnt)
                 cnt = cnt + 1
 
         # if count_processed % 1 or count_processed == len(vertices) - 1:

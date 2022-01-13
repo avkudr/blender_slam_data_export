@@ -94,8 +94,7 @@ class SlamDataExporter(bpy.types.Operator):
             for frame_idx in frame_indices:
                 self.go_to_frame(frame_idx)
 
-                camera_id = frame_idx
-                image_name = output_image_dir + ("/image_%d.png" % camera_id)
+                image_name = output_image_dir + ("/image_%d.png" % frame_idx)
                 intr = camera.get_camera_intrinsics(scene.camera, scene)
                 pose = camera.get_camera_pose(scene.camera)
 
@@ -108,7 +107,7 @@ class SlamDataExporter(bpy.types.Operator):
                 # points_2d = camera.project_point(scene, all_data["points_3d"])
 
                 all_data["points_3d"] = {**all_data["points_3d"], **points_3d}
-                all_data["frames"][camera_id] = {
+                all_data["frames"][frame_idx] = {
                     "image_name": image_name,
                     "intrinsics": intr,
                     "pose": pose,
