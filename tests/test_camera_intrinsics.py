@@ -24,7 +24,8 @@ class TestCameraIntrinsics(unittest.TestCase):
         self.assertEqual(camera.data.lens, 30)
         self.assertEqual(camera.data.sensor_width, 36)
 
-        K, w, h = blender_slam_data_export.camera.get_camera_intrinsics(camera, scene)
+        intr = blender_slam_data_export.camera.get_camera_intrinsics(camera, scene)
+        K, w, h = intr.K, intr.width, intr.height
 
         K_expected = np.matrix(
             [
@@ -45,7 +46,8 @@ class TestCameraIntrinsics(unittest.TestCase):
         self.assertEqual(camera.data.lens, 50)
         self.assertEqual(camera.data.sensor_width, 36)
 
-        K, w, h = blender_slam_data_export.camera.get_camera_intrinsics(camera, scene)
+        intr = blender_slam_data_export.camera.get_camera_intrinsics(camera, scene)
+        K, w, h = intr.K, intr.width, intr.height
 
         K_expected = np.matrix(
             [
