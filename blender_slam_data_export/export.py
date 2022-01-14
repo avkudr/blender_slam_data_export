@@ -54,7 +54,7 @@ def export_images(all_data, path):
         q = frame_data["pose"].q
         t = frame_data["pose"].t
 
-        camera_id = frame_idx
+        camera_id = frame_data["camera_id"]
         name = frame_data["image_name"]
 
         xys = []
@@ -77,21 +77,20 @@ def export_cameras(all_data, path):
        CAMERA_ID, MODEL, WIDTH, HEIGHT, PARAMS[]
     """
     cameras = {}
-    for frame_idx, frame_data in all_data["frames"].items():
+    for camera_id, intrinsics in all_data["cameras"]:
         camera_model = colmap.CAMERA_MODEL_NAMES["PINHOLE"].model_name
-        intrinsics = frame_data["intrinsics"]
-        # distortion is not supported :(
+
         K = intrinsics.K
         fx, fy, cx, cy = K[0][0], K[1][1], K[0][2], K[1][2]
         params = [fx, fy, cx, cy]
         c = colmap.Camera(
-            frame_idx,
+            camera_id,
             camera_model,
             int(intrinsics.width),
             int(intrinsics.height),
             params,
         )
-        cameras[frame_idx] = c
+        cameras[camera_id] = c
 
     colmap.write_cameras_text(cameras, os.path.join(path, "cameras.txt"))
 

@@ -29,7 +29,6 @@ class CameraIntrinsics:
 
         return np.allclose(self.K, other.K, atol=1e-9)
 
-
 class CameraIntrinsicsContainer:
     def __init__(self):
         self.map_idx_id = []
@@ -54,6 +53,11 @@ class CameraIntrinsicsContainer:
         self.map_idx_id.append(new_id)
         return new_id
 
+    def __iter__(self):
+        for id, intr in self.dict.items():
+            yield id, intr
+
+CameraPose = collections.namedtuple("CameraPose", ["q", "t"])
 
 def check_if_camera_valid(camera):
     if camera is None:
