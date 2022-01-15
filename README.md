@@ -1,14 +1,22 @@
 ![](./docs/blender_addon_logo.jpg)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Blender](https://img.shields.io/badge/blender-2.8+-blue)](https://www.blender.org/download/)
+[![version](https://img.shields.io/badge/version-0.1.0-green)]()
+[![Blender](https://img.shields.io/badge/blender-2.8+-orange)](https://www.blender.org/download/)
 [![COLMAP](https://img.shields.io/badge/export_format-colmap-blue)](http://colmap.github.io/)
 
 Export SLAM data 3D data from a blender scene in COLMAP format. This data can be used as the reference or ground truth for a variety of computer vision applications: 3d reconstruction, structure-from-motion, SLAM, tracking, mesh reconstruction, mesh texturing, and many more. The add-on supports the export of **3d vertices**, **2d projections**, **camera poses**, and **camera intrinsic** parameters.
 
 Evaluating the performance of 3d reconstruction or SLAM is not an easy task. The ground truch is often collected using special motion capture systems or LiDARs and it still not perfect. Using a rendering software, such as Blender, allows creating pefrect data, where the occlusions are already taken into account, for an arbitrary scene, with an arbitrary camera or a set of cameras, and for an arbitrary camera motion. For free!
 
-### Example
+- [Install](#install)
+- [Usage](#usage)
+- [Additional info](#additional-info)
+  - [Blender scene](#blender-scene)
+  - [Output format](#output-format)
+- [Acknowledgement](#acknowledgement)
+  - [3D models](#3d-models)
+## Example
 
 Original render (left) <=> Original with projected vertices (right)
 
@@ -19,14 +27,21 @@ The data exported by the add-on and imported in COLMAP-gui
 ![](./docs/bear_colmap.png)
 
 The original `*.blend` scene as well as the exported data can be found in the [examples folder](https://github.com/avkudr/blender_slam_data_export/tree/main/examples/blender_guru_teddy_bear) folder. The model was downloaded from this [BlenderGuru tutorial](https://www.youtube.com/watch?v=Ebx2qbBlvh0&ab_channel=BlenderGuru).
-## Install
+# Install
 
+Please refer to the wiki
 
-### 1. Download the add-on
+# Usage
 
-### 2. Install the add-on
+To export the data perform the following steps:
+- open your model in Blender
+- go to the **ExportSLAM** panel and click on **Export**
 
-## Usage
+![screenshot_usage](./docs/screenshot_usage.png)
+
+# Additional info
+
+## Blender scene
 
 - output same as for rendering
 - only active camera
@@ -53,9 +68,9 @@ Example forder structure:
    points3D.txt
 ```
 
-## Acknowledgement
+# Acknowledgement
 
-### 3D models
+## 3D models
 
 `blender_guru_teddy_bear.blend` is part of the [BlenderGuru tutorial](https://www.youtube.com/watch?v=Ebx2qbBlvh0&ab_channel=BlenderGuru) on youtube. This model was used to create images on the from page. Inside `blender_guru_teddy_bear` folder, you will find the blender file, and the SLAM data exported from it. The materials used are from [poliigon](https://www.poliigon.com/).
 
